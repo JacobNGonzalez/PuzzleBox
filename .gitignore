@@ -75,3 +75,8 @@ builds/sketch/move_1_servo.ino.cpp.d
 builds/sketch/move_1_servo.ino.cpp.o
 .vscode/arduino.json
 .vscode/c_cpp_properties.json
+builds/libraries/Keypad/Key.cpp.d
+builds/libraries/Keypad/Key.cpp.o
+builds/libraries/Keypad/Keypad.cpp.d
+builds/libraries/Keypad/Keypad.cpp.o
+.vscode/arduino.json
