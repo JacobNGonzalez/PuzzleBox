@@ -74,22 +74,69 @@ void setup() {
   pinMode(brd_1, 7, OUTPUT);
   digitalWrite(brd_1, 7, LOW);
 
+  pinMode(brd_1, 0, INPUT_PULLUP);
+  pinMode(brd_1, 1, INPUT_PULLUP);
+  pinMode(brd_1, 2, INPUT_PULLUP);
+  pinMode(brd_1, 3, INPUT_PULLUP);
+
+
+  digitalWrite(brd_1, 4, HIGH);
+  delay(250);
+  digitalWrite(brd_1, 4, LOW);
+  digitalWrite(brd_1, 5, HIGH);
+  delay(250);
+  digitalWrite(brd_1, 5, LOW);
+  digitalWrite(brd_1, 6, HIGH);
+  delay(250);
+  digitalWrite(brd_1, 6, LOW);
+  digitalWrite(brd_1, 7, HIGH);
+  delay(250);
+  digitalWrite(brd_1, 7, LOW);
+
+
 }
 
 // main loop function
 void loop() {
-  digitalWrite(brd_1, 4, HIGH);
-  delay(1000);
-  digitalWrite(brd_1, 4, LOW);
-  digitalWrite(brd_1, 5, HIGH);
-  delay(1000);
-  digitalWrite(brd_1, 5, LOW);
-  digitalWrite(brd_1, 6, HIGH);
-  delay(1000);
-  digitalWrite(brd_1, 6, LOW);
-  digitalWrite(brd_1, 7, HIGH);
-  delay(1000);
-  digitalWrite(brd_1, 7, LOW);
+  int btn_yellow = digitalRead(brd_1, 0);
+  int btn_blue = digitalRead(brd_1, 1);
+  int btn_red = digitalRead(brd_1, 2);
+  int btn_green = digitalRead(brd_1, 3);
+
+  if(!btn_yellow){
+    delay(150);
+    tone(buzzer, 261, 150);
+    digitalWrite(brd_1, 4, HIGH);
+    delay(250);
+    digitalWrite(brd_1, 4, LOW);
+  }
+
+  if(!btn_blue){
+    delay(150);
+    tone(buzzer, 293, 150);
+    digitalWrite(brd_1, 5, HIGH);
+    delay(250);
+    digitalWrite(brd_1, 5, LOW);
+  }
+
+  if(!btn_red){
+    delay(150);
+    tone(buzzer, 329, 150);
+    digitalWrite(brd_1, 6, HIGH);
+    delay(250);
+    digitalWrite(brd_1, 6, LOW);
+  }
+
+  if(!btn_green){
+    delay(150);
+    tone(buzzer, 392, 150);
+    digitalWrite(brd_1, 7, HIGH);
+    delay(250);
+    digitalWrite(brd_1, 7, LOW);
+  }
+
+
+  
  }
 
 // ################################################
