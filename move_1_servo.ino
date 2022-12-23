@@ -1,15 +1,25 @@
+
 //// ##### Library Imports #####
 #include <Servo.h>
 #include <Keypad.h>
+#include <Wire.h>
+//#include <PCF8574.h>
+#include <I2CKeyPad.h>
+#include <pcf8574.h>
 //// ###########################
 
 //// ##### Initial Variables #####
   //// |||||||| Hardware Specific |||||||
+  //// I2C Expansion Boards
+    PCF8574 brd_1(0x20);
   //// LED variables
     const int led_green =  13; // pin number of green LED
 
   //// Button Variables
     const int btn_green = 12; // pin number of green pushbutton
+
+  //// Output Variables
+    const int buzzer = 8;
 
   //// Keypad Variables
     const int ROW_NUM = 4; // num of rows rows on keypad
@@ -46,18 +56,40 @@ void setup() {
   Serial.print("setup running now");
   input_password.reserve(10); // set memory reserve for password
 
-  pinMode(led_green, OUTPUT); // initialize the LED pin as an output:
-  pinMode(btn_green, INPUT); // initialize the pushbutton pin as an input
+  //pinMode(led_green, OUTPUT); // initialize the LED pin as an output:
+  //pinMode(btn_green, INPUT); // initialize the pushbutton pin as an input
 
   srv_podLift.attach(pin_srv_podLift); // attach the servo to pin
   srv_podLift.write(loc_neutral); // move servo to neutral
   delay(3000);
+
+  // set pin mode output for all the expansion board LEDs
+  // turn off all LEDs to start
+  pinMode(brd_1, 4, OUTPUT);
+  digitalWrite(brd_1, 4, LOW);
+  pinMode(brd_1, 5, OUTPUT); //set LED pin as output for testing
+  digitalWrite(brd_1, 5, LOW);
+  pinMode(brd_1, 6, OUTPUT);
+  digitalWrite(brd_1, 6, LOW);
+  pinMode(brd_1, 7, OUTPUT);
+  digitalWrite(brd_1, 7, LOW);
+
 }
 
 // main loop function
 void loop() {
-
-
+  digitalWrite(brd_1, 4, HIGH);
+  delay(1000);
+  digitalWrite(brd_1, 4, LOW);
+  digitalWrite(brd_1, 5, HIGH);
+  delay(1000);
+  digitalWrite(brd_1, 5, LOW);
+  digitalWrite(brd_1, 6, HIGH);
+  delay(1000);
+  digitalWrite(brd_1, 6, LOW);
+  digitalWrite(brd_1, 7, HIGH);
+  delay(1000);
+  digitalWrite(brd_1, 7, LOW);
  }
 
 // ################################################
