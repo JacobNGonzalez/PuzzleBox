@@ -63,10 +63,11 @@
 // setup function running at the beginning of the sketch
 void setup() {
 
-  Wire .begin (); // Call the connection Wire
-  keypad.begin (makeKeymap (keys)); // Call the connection
+  Wire.begin (); // Call the connection Wire
+  keypad.begin (makeKeymap (keys)); // Call the connection for keypad
+  // Remove Wire and Keypad begins above and only call kpd.begin() ?
 
-  Serial.begin(9600); // start serial monitor
+  Serial.begin(9600); // start serial monitor and set baud rate
   Serial.print("setup running now");
   input_password.reserve(10); // set memory reserve for password
 
@@ -75,13 +76,14 @@ void setup() {
 
   srv_podLift.attach(pin_srv_podLift); // attach the servo to pin
   srv_podLift.write(loc_neutral); // move servo to neutral
-  delay(3000);
+  delay(2000); // delay to let servos all go home
 
-  // set pin mode output for all the expansion board LEDs
-  // turn off all LEDs to start
+  // Set pin mode output for all the expansion board LEDs (Simon Says)
+  // Turn off all LEDs to start
+  //TODO: Below can probably be looped to clean up a bit
   pinMode(brd_1, 4, OUTPUT);
   digitalWrite(brd_1, 4, LOW);
-  pinMode(brd_1, 5, OUTPUT); //set LED pin as output for testing
+  pinMode(brd_1, 5, OUTPUT); 
   digitalWrite(brd_1, 5, LOW);
   pinMode(brd_1, 6, OUTPUT);
   digitalWrite(brd_1, 6, LOW);
@@ -93,67 +95,22 @@ void setup() {
   pinMode(brd_1, 2, INPUT_PULLUP);
   pinMode(brd_1, 3, INPUT_PULLUP);
 
+  // Blink the LEDs in a row
+  blinkLightRow();
+  blinkLightRow();
+  blinkLightRow();
+  
 
-  digitalWrite(brd_1, 4, HIGH);
-  delay(250);
-  digitalWrite(brd_1, 4, LOW);
-  digitalWrite(brd_1, 5, HIGH);
-  delay(250);
-  digitalWrite(brd_1, 5, LOW);
-  digitalWrite(brd_1, 6, HIGH);
-  delay(250);
-  digitalWrite(brd_1, 6, LOW);
-  digitalWrite(brd_1, 7, HIGH);
-  delay(250);
-  digitalWrite(brd_1, 7, LOW);
 
 
 }
 
 // main loop function
 void loop() {
-  int btn_yellow = digitalRead(brd_1, 0);
-  int btn_blue = digitalRead(brd_1, 1);
-  int btn_red = digitalRead(brd_1, 2);
-  int btn_green = digitalRead(brd_1, 3);
+  testSimonButtons();
+  testKeypad();
 
-  if(!btn_yellow){
-    delay(150);
-    tone(buzzer, 261, 150);       // C note - octave 4
-    digitalWrite(brd_1, 4, HIGH);
-    delay(250);
-    digitalWrite(brd_1, 4, LOW);
-  }
 
-  if(!btn_blue){
-    delay(150);
-    tone(buzzer, 293, 150);       // D note - octave 4
-    digitalWrite(brd_1, 5, HIGH);
-    delay(250);
-    digitalWrite(brd_1, 5, LOW);
-  }
-
-  if(!btn_red){
-    delay(150);
-    tone(buzzer, 329, 150);       // E note - octave 4
-    digitalWrite(brd_1, 6, HIGH);
-    delay(250);
-    digitalWrite(brd_1, 6, LOW);
-  }
-
-  if(!btn_green){
-    delay(150);
-    tone(buzzer, 392, 150);       // G note - octave 4
-    digitalWrite(brd_1, 7, HIGH);
-    delay(250);
-    digitalWrite(brd_1, 7, LOW);
-  }
-
-  char key = keypad.getKey (); // Create a variable named key of type char to hold the characters pressed
- 
-  if (key) {// if the key variable contains
-    Serial.println (key); // output characters from Serial Monitor
-  }
 
 
   
@@ -166,6 +123,11 @@ void loop() {
 
   void simonSays() {
     // puzzle to match RGBY button-press to pattern shown on LEDs
+
+  }
+
+  void passwordMatch() {
+
 
   }
 
@@ -206,6 +168,29 @@ void loop() {
     }
   }
 
+  //move the servo controlling the gift drawer latch
+  void openGiftDrawer(){
+
+
+  }
+
+  // blink all the colored simon LEDs in a row
+  void blinkLightRow(){
+    //TODO: This can also be looped when cleaning
+    digitalWrite(brd_1, 4, HIGH);
+    delay(100);
+    digitalWrite(brd_1, 4, LOW);
+    digitalWrite(brd_1, 5, HIGH);
+    delay(100);
+    digitalWrite(brd_1, 5, LOW);
+    digitalWrite(brd_1, 6, HIGH);
+    delay(100);
+    digitalWrite(brd_1, 6, LOW);
+    digitalWrite(brd_1, 7, HIGH);
+    delay(100);
+    digitalWrite(brd_1, 7, LOW);
+  }
+
 
 // #################################################
 
@@ -229,5 +214,60 @@ void loop() {
     Serial.println("stopping servo - move to to 90");
     delay(5000);
   }
+
+  // function to test functionality of all the Simon Says buttons, their LEDs, and buzzer sounds
+  void testSimonButtons() {
+    // set the current state of each button 
+    int btn_yellow = digitalRead(brd_1, 0);
+    int btn_blue = digitalRead(brd_1, 1);
+    int btn_red = digitalRead(brd_1, 2);
+    int btn_green = digitalRead(brd_1, 3);
+
+    //Check the state of each button. Delay to skip bumps, play sound, blink LED
+    //TODO: Combine these into one loop
+    if(!btn_yellow){
+      delay(150);
+      tone(buzzer, 261, 150);       // C note - octave 4
+      digitalWrite(brd_1, 4, HIGH);
+      delay(250);
+      digitalWrite(brd_1, 4, LOW);
+    }
+
+    if(!btn_blue){
+      delay(150);
+      tone(buzzer, 293, 150);       // D note - octave 4
+      digitalWrite(brd_1, 5, HIGH);
+      delay(250);
+      digitalWrite(brd_1, 5, LOW);
+    }
+
+    if(!btn_red){
+      delay(150);
+      tone(buzzer, 329, 150);       // E note - octave 4
+      digitalWrite(brd_1, 6, HIGH);
+      delay(250);
+      digitalWrite(brd_1, 6, LOW);
+    }
+
+    if(!btn_green){
+      delay(150);
+      tone(buzzer, 392, 150);       // G note - octave 4
+      digitalWrite(brd_1, 7, HIGH);
+      delay(250);
+      digitalWrite(brd_1, 7, LOW);
+    }
+  }
+
+  // function to test the keypad buttons
+  // Prints each press into the serial monitor
+  void testKeypad() {
+    char key = keypad.getKey (); // Create a variable named key of type char to hold the characters pressed
+ 
+    if (key) {// if the key variable contains
+      Serial.println (key); // output characters from Serial Monitor
+    }
+  }
+
+
   
 // #################################################
