@@ -3,15 +3,19 @@
 #include <Servo.h>
 #include <Keypad.h>
 #include <Wire.h>
+#include <Key.h>
 //#include <PCF8574.h>
-#include <I2CKeyPad.h>
+//#include <I2CKeyPad.h>
 #include <pcf8574.h>
+#include <Keypad_I2C.h>
 //// ###########################
 
 //// ##### Initial Variables #####
   //// |||||||| Hardware Specific |||||||
   //// I2C Expansion Boards
-    PCF8574 brd_1(0x20);
+    PCF8574 brd_1(0x20);  // board with simon hardware
+    //PCF8574 brd_2(0x21);  // board with keypad hardware
+
   //// LED variables
     const int led_green =  13; // pin number of green LED
 
@@ -22,17 +26,23 @@
     const int buzzer = 8;
 
   //// Keypad Variables
-    const int ROW_NUM = 4; // num of rows rows on keypad
-    const int COLUMN_NUM = 4; // num of columns on the keypad
-    char keys[ROW_NUM][COLUMN_NUM] = {
+    /// Below is for Keypad on KeyPad_I2C (Joe Young's)
+    int brd_keypad = 0x21;
+    const byte ROWS = 4; // num of rows rows on keypad
+    const byte COLS = 4; // num of columns on the keypad
+    char keys[ROWS][COLS] = {
       {'1','2','3', 'A'},
       {'4','5','6', 'B'},
       {'7','8','9', 'C'},
       {'*','0','#', 'D'}
     }; // matrix of key locations
-    byte pin_rows[ROW_NUM] = {9, 8, 7, 6}; //connect to the row pinouts of the keypad
-    byte pin_column[COLUMN_NUM] = {5, 4, 3, 2}; //connect to the column pinouts of the keypad
-    Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM);
+    byte rowPins[ROWS] = {0, 1, 2, 3}; //connect to the row pinouts of the keypad
+    byte colPins[COLS] = {4, 5, 6, 7}; //connect to the column pinouts of the keypad
+    // Call the keypad constructor. Normally the last value would be the expansion
+    //    board type (PCF8574 in this case). Replacing it with 1 per the library code
+    //    because using the name interferes with other library used.
+    Keypad_I2C keypad (makeKeymap (keys), rowPins, colPins, ROWS, COLS, brd_keypad, 1);
+
 
   //// Servo Variables
     int loc_neutral = 90;  // neutral postion for continuous servos 
@@ -52,6 +62,10 @@
  
 // setup function running at the beginning of the sketch
 void setup() {
+
+  Wire .begin (); // Call the connection Wire
+  keypad.begin (makeKeymap (keys)); // Call the connection
+
   Serial.begin(9600); // start serial monitor
   Serial.print("setup running now");
   input_password.reserve(10); // set memory reserve for password
@@ -105,7 +119,7 @@ void loop() {
 
   if(!btn_yellow){
     delay(150);
-    tone(buzzer, 261, 150);
+    tone(buzzer, 261, 150);       // C note - octave 4
     digitalWrite(brd_1, 4, HIGH);
     delay(250);
     digitalWrite(brd_1, 4, LOW);
@@ -113,7 +127,7 @@ void loop() {
 
   if(!btn_blue){
     delay(150);
-    tone(buzzer, 293, 150);
+    tone(buzzer, 293, 150);       // D note - octave 4
     digitalWrite(brd_1, 5, HIGH);
     delay(250);
     digitalWrite(brd_1, 5, LOW);
@@ -121,7 +135,7 @@ void loop() {
 
   if(!btn_red){
     delay(150);
-    tone(buzzer, 329, 150);
+    tone(buzzer, 329, 150);       // E note - octave 4
     digitalWrite(brd_1, 6, HIGH);
     delay(250);
     digitalWrite(brd_1, 6, LOW);
@@ -129,10 +143,16 @@ void loop() {
 
   if(!btn_green){
     delay(150);
-    tone(buzzer, 392, 150);
+    tone(buzzer, 392, 150);       // G note - octave 4
     digitalWrite(brd_1, 7, HIGH);
     delay(250);
     digitalWrite(brd_1, 7, LOW);
+  }
+
+  char key = keypad.getKey (); // Create a variable named key of type char to hold the characters pressed
+ 
+  if (key) {// if the key variable contains
+    Serial.println (key); // output characters from Serial Monitor
   }
 
 
