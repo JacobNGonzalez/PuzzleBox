@@ -55,9 +55,13 @@
 
   //// |||||||| Puzzle Specific |||||||
   //// Keypad Puzzle
-    const String password = "12AB"; // primary password for the keypad puzzle
-    String input_password; // actual password that the user input on the pad
-    bool correct_pw = false; // whether the correct pw has been entered and confirmed
+    const String password = "12A"; // primary password for the keypad puzzle
+    String pad_input; // password the user has input on the pad
+
+  //// |||||||| Puzzle Completion Bools |||||||
+    bool won_simon = false;
+    bool won_password = false;
+    bool won_jingle = false;
 
  
 // setup function running at the beginning of the sketch
@@ -69,7 +73,7 @@ void setup() {
 
   Serial.begin(9600); // start serial monitor and set baud rate
   Serial.print("setup running now");
-  input_password.reserve(10); // set memory reserve for password
+  pad_input.reserve(10); // set memory reserve for password
 
   //pinMode(led_green, OUTPUT); // initialize the LED pin as an output:
   //pinMode(btn_green, INPUT); // initialize the pushbutton pin as an input
@@ -108,7 +112,10 @@ void setup() {
 // main loop function
 void loop() {
   testSimonButtons();
-  testKeypad();
+  //testKeypad();
+
+  passwordMatch();
+
 
 
 
@@ -127,7 +134,39 @@ void loop() {
   }
 
   void passwordMatch() {
+    char key = keypad.getKey();
+    if (key){
+      Serial.println(key);
+      tone(buzzer, 1108, 100);
+      if(key == '*') {
+        pad_input = ""; // clear input password
+      } else if(key == '#') {
+      if(password == pad_input) {
+        Serial.println("password is correct");
+        //// turn LED on:
+        //digitalWrite(led_green, HIGH);
+        //digitalWrite(led_green, LOW);
+        delay(100);
+      } else {
+        Serial.println("password is incorrect, try again");
+        tone(buzzer, 24, 500);
+        digitalWrite(brd_1, 6, HIGH);
+        delay(200);
+        tone(buzzer, 24, 500);
+        delay(200);
+        tone(buzzer, 24, 500);
+        delay(200);
+        digitalWrite(brd_1, 6, LOW);
+        //// turn LED off:
+        //digitalWrite(led_green, LOW);
+        delay(100);
+      }
 
+      pad_input = ""; // clear input password
+      } else {
+        pad_input += key; // append new character to input password string
+      }
+    }
 
   }
 
@@ -145,9 +184,9 @@ void loop() {
     if (key){
       Serial.println(key);
       if(key == '*') {
-        input_password = ""; // clear input password
+        pad_input = ""; // clear input password
       } else if(key == '#') {
-      if(password == input_password) {
+      if(password == pad_input) {
         Serial.println("password is correct");
         // turn LED on:
         digitalWrite(led_green, HIGH);
@@ -161,9 +200,9 @@ void loop() {
         delay(100);
       }
 
-      input_password = ""; // clear input password
+      pad_input = ""; // clear input password
       } else {
-        input_password += key; // append new character to input password string
+        pad_input += key; // append new character to input password string
       }
     }
   }
@@ -178,15 +217,19 @@ void loop() {
   void blinkLightRow(){
     //TODO: This can also be looped when cleaning
     digitalWrite(brd_1, 4, HIGH);
+    tone(buzzer, 36, 50);
     delay(100);
     digitalWrite(brd_1, 4, LOW);
     digitalWrite(brd_1, 5, HIGH);
+    tone(buzzer, 36, 50);
     delay(100);
     digitalWrite(brd_1, 5, LOW);
     digitalWrite(brd_1, 6, HIGH);
+    tone(buzzer, 36, 50);
     delay(100);
     digitalWrite(brd_1, 6, LOW);
     digitalWrite(brd_1, 7, HIGH);
+    tone(buzzer, 36, 50);
     delay(100);
     digitalWrite(brd_1, 7, LOW);
   }
