@@ -55,14 +55,14 @@
     int pin_srv_podLift = 11; // pin that pod lift servo will attach to
     Servo srv_rightLock; // declare servo for the right flap locking mechanism
     Servo srv_drawerLatch; // declare servo for the drawer latch mechanism
-
+    int pin_srv_drawerLatch = 12;
   //// |||||||| Puzzle Specific |||||||
   //// Keypad Puzzle
-    const String password = "12A"; // primary password for the keypad puzzle
+    const String password = "3920B"; // primary password for the keypad puzzle
     String pad_input; // password the user has input on the pad
 
   //// Simon Puzzle
-   #define simonRounds 3 // number of rounds in the Simon game
+   #define simonRounds 7 // number of rounds in the Simon game
     int pinCount = 4; // number of pins used (same for btns and leds)
     int ledState = 0;
     int gameState_simon = 0;    
@@ -100,6 +100,8 @@ void setup() {
 
   srv_podLift.attach(pin_srv_podLift); // attach the servo to pin
   srv_podLift.write(loc_neutral); // move servo to neutral
+  srv_drawerLatch.attach(pin_srv_drawerLatch); // attach the servo to pin
+  srv_drawerLatch.write(loc_neutral);
   delay(2000); // delay to let servos all go home
 
   // Set pin mode output for all the expansion board LEDs (Simon Says)
@@ -154,7 +156,7 @@ void loop() {
   }
   else if (won_simon && won_password) {
     openingDrawerSound();
-    delay(1000);
+    delay(500);
     openGiftDrawer();
     delay(200);
   }
@@ -162,6 +164,9 @@ void loop() {
     Serial.println("condition combo error");
 
   }
+
+  //testContinuousServo(srv_drawerLatch);
+
  }
 
 // ################################################
@@ -321,6 +326,7 @@ void loop() {
       winDisplay();
       winDisplay();
       loseDisplay();
+      liftKeypod();
       Serial.println("winDisplay - simon says");
       // delay briefly before running pre_game
       delay (1000);
@@ -442,6 +448,7 @@ void loop() {
         delay(200);
         tone(buzzer, 277, 300);
         won_password = true; // mark this puzzle as 'won'
+        //openGiftDrawer();
         delay(100);
       } else {
         Serial.println("password is incorrect, try again");
@@ -479,13 +486,13 @@ void loop() {
     Serial.println("lifting key pod");
     Serial.println("spinning servo forward - move to 180");
     srv_podLift.write(180);
-    delay(750);
+    delay(850);
     srv_podLift.write(90);
     Serial.println("stopping servo - move to to 90");
     delay(15000);
     Serial.println("spinning servo in reverse - move to to 0");
     srv_podLift.write(0);
-    delay(750);
+    delay(850);
     srv_podLift.write(90);
     Serial.println("stopping servo - move to to 90");
     delay(200);
@@ -494,12 +501,15 @@ void loop() {
   //move the servo controlling the gift drawer latch
   void openGiftDrawer(){
     Serial.println("opening gift drawer");
-    Serial("spinning servo forward - move to 180");
+    Serial.println("spinning servo forward to open latch");
     srv_drawerLatch.write(180);
-    delay(10000);
+    delay(15000);
     srv_drawerLatch.write(90);
     Serial.println("stopping servo - move to to 90");
-    delay(200);
+    delay(20000);
+    Serial.println("spinning servo reverse to close latch");
+    srv_drawerLatch.write(0);
+    delay(15000);
   }
 
   //after win - have lights scroll quickly
@@ -599,7 +609,7 @@ void loop() {
     delay(250);
   }
 
-  void openingDrawerSound {
+  void openingDrawerSound() {
     Serial.println("playing gift drawer sound");
     #define NOTE_B0  31
     #define NOTE_C1  33
@@ -706,62 +716,62 @@ void loop() {
     NOTE_E5,4, NOTE_C5,4, NOTE_C5,4,
     NOTE_A5,4, NOTE_A5,8, NOTE_AS5,8, NOTE_A5,8, NOTE_G5,8,
     NOTE_F5,4, NOTE_D5,4, NOTE_C5,8, NOTE_C5,8,
-    NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
+    NOTE_D5,4, NOTE_G5,4, NOTE_E5,4
 
-    NOTE_F5,2, NOTE_C5,4, //8 
-    NOTE_F5,4, NOTE_F5,8, NOTE_G5,8, NOTE_F5,8, NOTE_E5,8,
-    NOTE_D5,4, NOTE_D5,4, NOTE_D5,4,
-    NOTE_G5,4, NOTE_G5,8, NOTE_A5,8, NOTE_G5,8, NOTE_F5,8,
-    NOTE_E5,4, NOTE_C5,4, NOTE_C5,4,
-    NOTE_A5,4, NOTE_A5,8, NOTE_AS5,8, NOTE_A5,8, NOTE_G5,8,
-    NOTE_F5,4, NOTE_D5,4, NOTE_C5,8, NOTE_C5,8,
-    NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
-    NOTE_F5,2, NOTE_C5,4,
+    // NOTE_F5,2, NOTE_C5,4, //8 
+    // NOTE_F5,4, NOTE_F5,8, NOTE_G5,8, NOTE_F5,8, NOTE_E5,8,
+    // NOTE_D5,4, NOTE_D5,4, NOTE_D5,4,
+    // NOTE_G5,4, NOTE_G5,8, NOTE_A5,8, NOTE_G5,8, NOTE_F5,8,
+    // NOTE_E5,4, NOTE_C5,4, NOTE_C5,4,
+    // NOTE_A5,4, NOTE_A5,8, NOTE_AS5,8, NOTE_A5,8, NOTE_G5,8,
+    // NOTE_F5,4, NOTE_D5,4, NOTE_C5,8, NOTE_C5,8,
+    // NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
+    // NOTE_F5,2, NOTE_C5,4
 
-    NOTE_F5,4, NOTE_F5,4, NOTE_F5,4,//17
-    NOTE_E5,2, NOTE_E5,4,
-    NOTE_F5,4, NOTE_E5,4, NOTE_D5,4,
-    NOTE_C5,2, NOTE_A5,4,
-    NOTE_AS5,4, NOTE_A5,4, NOTE_G5,4,
-    NOTE_C6,4, NOTE_C5,4, NOTE_C5,8, NOTE_C5,8,
-    NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
-    NOTE_F5,2, NOTE_C5,4, 
-    NOTE_F5,4, NOTE_F5,8, NOTE_G5,8, NOTE_F5,8, NOTE_E5,8,
-    NOTE_D5,4, NOTE_D5,4, NOTE_D5,4,
+    // NOTE_F5,4, NOTE_F5,4, NOTE_F5,4,//17
+    // NOTE_E5,2, NOTE_E5,4,
+    // NOTE_F5,4, NOTE_E5,4, NOTE_D5,4,
+    // NOTE_C5,2, NOTE_A5,4,
+    // NOTE_AS5,4, NOTE_A5,4, NOTE_G5,4,
+    // NOTE_C6,4, NOTE_C5,4, NOTE_C5,8, NOTE_C5,8,
+    // NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
+    // NOTE_F5,2, NOTE_C5,4, 
+    // NOTE_F5,4, NOTE_F5,8, NOTE_G5,8, NOTE_F5,8, NOTE_E5,8,
+    // NOTE_D5,4, NOTE_D5,4, NOTE_D5,4,
     
-    NOTE_G5,4, NOTE_G5,8, NOTE_A5,8, NOTE_G5,8, NOTE_F5,8, //27
-    NOTE_E5,4, NOTE_C5,4, NOTE_C5,4,
-    NOTE_A5,4, NOTE_A5,8, NOTE_AS5,8, NOTE_A5,8, NOTE_G5,8,
-    NOTE_F5,4, NOTE_D5,4, NOTE_C5,8, NOTE_C5,8,
-    NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
-    NOTE_F5,2, NOTE_C5,4,
-    NOTE_F5,4, NOTE_F5,4, NOTE_F5,4,
-    NOTE_E5,2, NOTE_E5,4,
-    NOTE_F5,4, NOTE_E5,4, NOTE_D5,4,
+    // NOTE_G5,4, NOTE_G5,8, NOTE_A5,8, NOTE_G5,8, NOTE_F5,8, //27
+    // NOTE_E5,4, NOTE_C5,4, NOTE_C5,4,
+    // NOTE_A5,4, NOTE_A5,8, NOTE_AS5,8, NOTE_A5,8, NOTE_G5,8,
+    // NOTE_F5,4, NOTE_D5,4, NOTE_C5,8, NOTE_C5,8,
+    // NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
+    // NOTE_F5,2, NOTE_C5,4,
+    // NOTE_F5,4, NOTE_F5,4, NOTE_F5,4,
+    // NOTE_E5,2, NOTE_E5,4,
+    // NOTE_F5,4, NOTE_E5,4, NOTE_D5,4,
     
-    NOTE_C5,2, NOTE_A5,4,//36
-    NOTE_AS5,4, NOTE_A5,4, NOTE_G5,4,
-    NOTE_C6,4, NOTE_C5,4, NOTE_C5,8, NOTE_C5,8,
-    NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
-    NOTE_F5,2, NOTE_C5,4, 
-    NOTE_F5,4, NOTE_F5,8, NOTE_G5,8, NOTE_F5,8, NOTE_E5,8,
-    NOTE_D5,4, NOTE_D5,4, NOTE_D5,4,
-    NOTE_G5,4, NOTE_G5,8, NOTE_A5,8, NOTE_G5,8, NOTE_F5,8, 
-    NOTE_E5,4, NOTE_C5,4, NOTE_C5,4,
+    // NOTE_C5,2, NOTE_A5,4,//36
+    // NOTE_AS5,4, NOTE_A5,4, NOTE_G5,4,
+    // NOTE_C6,4, NOTE_C5,4, NOTE_C5,8, NOTE_C5,8,
+    // NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
+    // NOTE_F5,2, NOTE_C5,4, 
+    // NOTE_F5,4, NOTE_F5,8, NOTE_G5,8, NOTE_F5,8, NOTE_E5,8,
+    // NOTE_D5,4, NOTE_D5,4, NOTE_D5,4,
+    // NOTE_G5,4, NOTE_G5,8, NOTE_A5,8, NOTE_G5,8, NOTE_F5,8, 
+    // NOTE_E5,4, NOTE_C5,4, NOTE_C5,4,
     
-    NOTE_A5,4, NOTE_A5,8, NOTE_AS5,8, NOTE_A5,8, NOTE_G5,8,//45
-    NOTE_F5,4, NOTE_D5,4, NOTE_C5,8, NOTE_C5,8,
-    NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
-    NOTE_F5,2, NOTE_C5,4,
-    NOTE_F5,4, NOTE_F5,8, NOTE_G5,8, NOTE_F5,8, NOTE_E5,8,
-    NOTE_D5,4, NOTE_D5,4, NOTE_D5,4,
-    NOTE_G5,4, NOTE_G5,8, NOTE_A5,8, NOTE_G5,8, NOTE_F5,8,
-    NOTE_E5,4, NOTE_C5,4, NOTE_C5,4,
+    // NOTE_A5,4, NOTE_A5,8, NOTE_AS5,8, NOTE_A5,8, NOTE_G5,8,//45
+    // NOTE_F5,4, NOTE_D5,4, NOTE_C5,8, NOTE_C5,8,
+    // NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
+    // NOTE_F5,2, NOTE_C5,4,
+    // NOTE_F5,4, NOTE_F5,8, NOTE_G5,8, NOTE_F5,8, NOTE_E5,8,
+    // NOTE_D5,4, NOTE_D5,4, NOTE_D5,4,
+    // NOTE_G5,4, NOTE_G5,8, NOTE_A5,8, NOTE_G5,8, NOTE_F5,8,
+    // NOTE_E5,4, NOTE_C5,4, NOTE_C5,4,
     
-    NOTE_A5,4, NOTE_A5,8, NOTE_AS5,8, NOTE_A5,8, NOTE_G5,8, //53
-    NOTE_F5,4, NOTE_D5,4, NOTE_C5,8, NOTE_C5,8,
-    NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
-    NOTE_F5,2, REST,4
+    // NOTE_A5,4, NOTE_A5,8, NOTE_AS5,8, NOTE_A5,8, NOTE_G5,8, //53
+    // NOTE_F5,4, NOTE_D5,4, NOTE_C5,8, NOTE_C5,8,
+    // NOTE_D5,4, NOTE_G5,4, NOTE_E5,4,
+    // NOTE_F5,2, REST,4
   };
 
   int notes = sizeof(melody) / sizeof(melody[0]) / 2;
@@ -810,13 +820,15 @@ void loop() {
   void testContinuousServo(Servo servoName) {
     servoName.write(180);
     Serial.println("spinning servo forward - move to 180");
-    delay(1000);
+    // forward opens latch to release
+    delay(15000);
     servoName.write(90);
     Serial.println("stopping servo - move to to 90");
     delay(5000);
     servoName.write(0);
-    Serial.println("spinning servo in reverse - move to to 0");
-    delay(1000);
+    Serial.println("spinning servo in reverse - move to to 0"); 
+    //reverse closes latch
+    delay(15000);
     servoName.write(90);
     Serial.println("stopping servo - move to to 90");
     delay(5000);
